@@ -1,6 +1,7 @@
 package com.example.s_wheats
 
 import android.os.Bundle
+import android.os.Message
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,7 +25,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         myWebView.webViewClient = WebViewClient()
-        myWebView.webChromeClient = WebChromeClient()
+        myWebView.webChromeClient = object : WebChromeClient(){
+            override fun onCreateWindow(view: WebView, isDialog: Boolean, isUserGusture: Boolean, resultMsg: Message): Boolean {
+                val newWebView = WebView(this@MainActivity).apply{
+                    webViewClient = WebViewClient()
+                }
+
+                val transport = resultMsg.obj as WebView.WebViewTransport
+                transport.webView = newWebView
+                resultMsg.sendToTarget()
+
+                return true
+            }
+        }
         myWebView.loadUrl("https://s-wheats.github.io/front-end/") //웹뷰에 띄울 URL 정의부
     }
 
